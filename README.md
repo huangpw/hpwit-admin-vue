@@ -1,13 +1,13 @@
 <div align="center">
 <img src="https://s2.loli.net/2023/10/27/WzQ4JLNV5epKh6X.png" style="width:150px"/>
-    <h1>Nova Admin</h1>
+    <h1>Zyxhit Admin</h1>
 </div>
 
 <div align="center">
-    <img src="https://img.shields.io/github/license/chansee97/nova-admin"/>
-    <img src="https://badgen.net/github/stars/chansee97/nova-admin?icon=github"/>
-    <img src="https://gitee.com/chansee97/nova-admin/badge/star.svg"/>
-    <img src="https://img.shields.io/github/forks/chansee97/nova-admin"/>
+    <img src="https://img.shields.io/github/license/chansee97/zyxhit-admin"/>
+    <img src="https://badgen.net/github/stars/chansee97/zyxhit-admin?icon=github"/>
+    <img src="https://gitee.com/chansee97/zyxhit-admin/badge/star.svg"/>
+    <img src="https://img.shields.io/github/forks/chansee97/zyxhit-admin"/>
 </div>
 
 <div align='center'>
@@ -17,10 +17,10 @@
 
 ## Introduction
 
-[Nova-admin](https://github.com/chansee97/nova-admin) is a clean and concise back-end management template based on Vue3, Vite5, Typescript, and Naive UI. It implements complete functionality in a simple way, while also considering code standards, readability, and avoiding excessive encapsulation to facilitate secondary development.
+[Zyxhit-admin](https://github.com/chansee97/zyxhit-admin) is a clean and concise back-end management template based on Vue3, Vite5, Typescript, and Naive UI. It implements complete functionality in a simple way, while also considering code standards, readability, and avoiding excessive encapsulation to facilitate secondary development.
 
-- [Nova-Admin preview](https://nova-admin.pages.dev/)
-- [Nova-Admin docs](https://nova-admin-docs.pages.dev/)
+- [Zyxhit-Admin preview](https://zyxhit-admin.pages.dev/)
+- [Zyxhit-Admin docs](https://zyxhit-admin-docs.pages.dev/)
 
 ## Features
 
@@ -45,19 +45,19 @@
 
 ## Repo
 
-- [Gitee](https://gitee.com/chansee97/nova-admin)
-- [Github](https://github.com/chansee97/nova-admin)
+- [Gitee](https://gitee.com/chansee97/zyxhit-admin)
+- [Github](https://github.com/chansee97/zyxhit-admin)
 
 ## Interface document
 
 This project uses ApiFox for interface mock, check the online documentation for more interface details
-[online aipfox docs](https://nova-admin.apifox.cn)
+[online aipfox docs](https://zyxhit-admin.apifox.cn)
 
 ## Install and use
 
 The local development environment is recommended to use pnpm 10.x, Node.js version 21.x.
 
-It is recommended to directly download the compressed package from [Releases](https://github.com/chansee97/nova-admin/releases)
+It is recommended to directly download the compressed package from [Releases](https://github.com/chansee97/zyxhit-admin/releases)
 
 ```bash
 # install dependencies
@@ -71,7 +71,7 @@ pnpm build
 
 ```
 
-You can deploy **nova-admin** in a production environment using docker-compose.
+You can deploy **zyxhit-admin** in a production environment using docker-compose.
 ```bash
 # Build product
 docker compose -f docker-compose.product.yml up --build -d
@@ -80,21 +80,21 @@ docker compose -f docker-compose.product.yml up --build -d
 
 ## Related projects
 
-- [Nova-admin-nest](https://github.com/chansee97/nova-admin-nest) (under development) Nova-Admin supporting background project based on TS, NestJs, typeorm
+- [Zyxhit-admin-nest](https://github.com/chansee97/zyxhit-admin-nest) (under development) Zyxhit-Admin supporting background project based on TS, NestJs, typeorm
 
 ## Learn to communicate
 
-Nova-Admin is a completely open-source and free project. It is still being optimized and iterated. It is designed to help developers more conveniently develop medium and large management systems. If you have any questions, please ask questions in the QQ exchange group.
+Zyxhit-Admin is a completely open-source and free project. It is still being optimized and iterated. It is designed to help developers more conveniently develop medium and large management systems. If you have any questions, please ask questions in the QQ exchange group.
 
 | Q-Group | wechat-Group |
 | :--: |:--: |
-| <img src="https://cdn.jsdelivr.net/gh/chansee97/static/nova-admin/q-group.png" width=170> |<img src="https://cdn.jsdelivr.net/gh/chansee97/static/wechat.png" width=170>|
+| <img src="https://cdn.jsdelivr.net/gh/chansee97/static/zyxhit-admin/q-group.png" width=170> |<img src="https://cdn.jsdelivr.net/gh/chansee97/static/wechat.png" width=170>|
 
 > Please indicate the purpose of adding WeChat.
 
 ## Contribution
 
-If you find any issues or have suggestions for improvement, please create an [issue](nova-admin/issues/new) or submit a PR. We welcome your contributions!
+If you find any issues or have suggestions for improvement, please create an [issue](zyxhit-admin/issues/new) or submit a PR. We welcome your contributions!
 
 ## Support
 
@@ -108,13 +108,13 @@ If you feel that this project is helpful for your work or study, please help me 
 
 Thanks for all their contributions!
 
-<a href="https://github.com/chansee97/nova-admin/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=chansee97/nova-admin" alt="contributors" />
+<a href="https://github.com/chansee97/zyxhit-admin/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=chansee97/zyxhit-admin" alt="contributors" />
 </a>
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=chansee97/nova-admin&type=Date)](https://star-history.com/#chansee97/nova-admin&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=chansee97/zyxhit-admin&type=Date)](https://star-history.com/#chansee97/zyxhit-admin&Date)
 
 ## License
 

@@ -69,13 +69,13 @@ function handleSelect(key: string | number) {
   }
 
   if (key === 'github')
-    window.open('https://github.com/chansee97/nova-admin')
+    window.open('https://github.com/chansee97/zyxhit-admin')
 
   if (key === 'gitee')
-    window.open('https://gitee.com/chansee97/nova-admin')
+    window.open('https://gitee.com/chansee97/zyxhit-admin')
 
   if (key === 'docs')
-    window.open('https://nova-admin-docs.pages.dev/')
+    window.open('https://zyxhit-admin-docs.pages.dev/')
 }
 </script>
 

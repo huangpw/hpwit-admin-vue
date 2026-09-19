@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const text = ref('nova-admin')
+const text = ref('zyxhit-admin')
 </script>
 
 <template>

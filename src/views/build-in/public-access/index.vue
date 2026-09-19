@@ -86,9 +86,9 @@ onMounted(() => {
         <div class="flex justify-between items-center py-4">
           <div class="flex items-center space-x-4">
             <div class="w-10 h-10 flex items-center justify-center">
-              <img src="/favicon.svg" alt="Nova Admin Logo" class="w-10 h-10">
+              <img src="/favicon.svg" alt="Zyxhit Admin Logo" class="w-10 h-10">
             </div>
-            <span class="text-2xl font-bold text-gray-900">Nova Admin</span>
+            <span class="text-2xl font-bold text-gray-900">Zyxhit Admin</span>
           </div>
           <div class="hidden md:flex items-center space-x-8">
             <a href="#features" class="text-gray-600 hover:text-gray-900 transition-colors">功能特性</a>
@@ -448,9 +448,9 @@ onMounted(() => {
           <div>
             <div class="flex items-center space-x-2 mb-4">
               <div class="w-10 h-10 flex items-center justify-center">
-                <img src="/favicon.svg" alt="Nova Admin Logo" class="w-8 h-8">
+                <img src="/favicon.svg" alt="Zyxhit Admin Logo" class="w-8 h-8">
               </div>
-              <span class="text-xl font-bold text-white">Nova Admin</span>
+              <span class="text-xl font-bold text-white">Zyxhit Admin</span>
             </div>
             <p class="text-gray-400">
               现代化的企业级管理后台解决方案
@@ -493,7 +493,7 @@ onMounted(() => {
 
         <div class="border-t border-gray-800 mt-8 pt-8 text-center">
           <p class="text-gray-400">
-            © 2024 Nova Admin. 保留所有权利。这是一个公共访问示例页面，设置了 requiresAuth: false
+            © 2024 Zyxhit Admin. 保留所有权利。这是一个公共访问示例页面，设置了 requiresAuth: false
           </p>
         </div>
       </div>

@@ -302,7 +302,7 @@ export const staticRoutes: AppRoute.RowRoute[] = [
     title: 'Nova docs',
     requiresAuth: true,
     icon: 'local:logo',
-    href: 'https://nova-admin-docs.netlify.app/',
+    href: 'https://zyxhit-admin-docs.netlify.app/',
     componentPath: '2333333',
     id: 504,
     pid: 5,

@@ -1,5 +1,5 @@
 {
-  "name": "nova-admin",
+  "name": "zyxhit-admin",
   "type": "module",
   "version": "0.9.18",
   "private": true,
@@ -10,12 +10,12 @@
     "url": "https://github.com/chansee97"
   },
   "license": "MIT",
-  "homepage": "https://github.com/chansee97/nova-admin",
+  "homepage": "https://github.com/chansee97/zyxhit-admin",
   "repository": {
-    "url": "https://github.com/chansee97/nova-admin.git"
+    "url": "https://github.com/chansee97/zyxhit-admin.git"
   },
   "bugs": {
-    "url": "https://github.com/chansee97/nova-admin/issues"
+    "url": "https://github.com/chansee97/zyxhit-admin/issues"
   },
   "keywords": [
     "Vue",

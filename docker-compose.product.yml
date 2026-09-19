@@ -1,8 +1,8 @@
 services:
-  nova-admin:
+  zyxhit-admin:
     build:
       context: .
       dockerfile: ./docker/dockerfile.product
-    container_name: nova-admin
+    container_name: zyxhit-admin
     ports:
       - 80:80

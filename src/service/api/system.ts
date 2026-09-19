@@ -1,7 +1,7 @@
 import { request } from '../http'
 
 /**
- * 获取当前登录用户的菜单路由列表（dynamic 模式）—— 后端 nova-admin-boot 的 /v1/menu/routes/current
+ * 获取当前登录用户的菜单路由列表（dynamic 模式）—— 后端 zyxhit-admin-boot 的 /v1/menu/routes/current
  *  返回字段已对齐前端 AppRoute.RowRoute：id / pid / name / path / title / requiresAuth / icon / menuType
  *  / componentPath / hide / order / href / keepAlive / redirect / params
  *  menuType 已经是 "page" | "dir" | "link" | "button" 字符串，可直接喂给 helper
@@ -167,7 +167,7 @@ export function fetchDictItemListByDictCode(dictCode?: string, status?: boolean)
 /**
  * 根据 dictCode 获取下拉选项(走 Redis 缓存)。
  *
- * 后端 nova-admin-boot SysDictController#getDictOptions:
+ * 后端 zyxhit-admin-boot SysDictController#getDictOptions:
  *   GET /v1/dict/options?dictCode=xxx
  *   返回 List<Option<String>> = [{ value: string, label: string }, ...]
  *   已自动过滤 status=1 的项,按 sort 升序,管理员可通过
