@@ -1,0 +1,229 @@
+<script setup lang="ts">
+import type { FormRules } from 'naive-ui';
+
+import { useBoolean } from '@/hooks';
+import {
+  fetchAddDictItem,
+  fetchUpdateDictItem,
+} from '@/service';
+
+interface Props {
+  modalName?: string
+  dictCode?: string
+  status?: boolean
+  dictData?: Entity.Dict[]
+}
+
+const {
+  modalName = '',
+  dictCode,
+  status = false,
+  dictData = []
+} = defineProps<Props>()
+
+const emit = defineEmits<{
+  open: []
+  close: []
+  success: void
+}>()
+
+const { bool: modalVisible, setTrue: showModal, setFalse: hiddenModal } = useBoolean(false)
+const { bool: submitLoading, setTrue: startLoading, setFalse: endLoading } = useBoolean(false)
+
+const formDefault: Entity.DictItem = {
+  id: null,
+  dictCode: null,
+  label: '',
+  value: '',
+  tagType: 'default',
+  status: 1,
+  sort: 1,
+  remark: null,
+}
+const formModel = ref<Entity.DictItem>({ ...formDefault })
+
+type ModalType = 'add' | 'view' | 'edit'
+const modalType = shallowRef<ModalType>('add')
+const modalTitle = computed(() => {
+  const titleMap: Record<ModalType, string> = {
+    add: '添加' + modalName,
+    view: '查看' + modalName,
+    edit: '编辑' + modalName
+  }
+  return `${titleMap[modalType.value]}${name}`
+})
+
+async function openModal(type: ModalType = 'add', data?: any) {
+  emit('open')
+  modalType.value = type
+  showModal()
+  const handlers = {
+    async add() {
+      formModel.value = { ...formDefault }
+      formModel.value.dictCode = dictCode
+      // formModel.value.status = status ? 1 : 0
+      if (dictCode) {
+        formModel.value.code = dictCode
+      }
+    },
+    async view() {
+      if (!data)
+        return
+      formModel.value = { ...data }
+    },
+    async edit() {
+      if (!data)
+        return
+      formModel.value = { ...data }
+    },
+  }
+  await handlers[type]()
+}
+
+function closeModal() {
+  hiddenModal()
+  endLoading()
+  emit('close')
+}
+
+defineExpose({
+  openModal,
+})
+
+const formRef = ref()
+async function submitModal() {
+  const handlers = {
+    async add() {
+      return new Promise(async (resolve) => {
+        // setTimeout(() => {
+        //   window.$message.success('模拟新增成功')
+        //   resolve(true)
+        // }, 2000)
+        const res = await fetchAddDictItem(formModel.value.dictCode, formModel.value)
+        console.log(res, 'fetchAddDictItem')
+        window.$message.success('提交成功')
+        emit('success')   // ⭐ 通知父组件
+        resolve(true)
+      })
+    },
+    async edit() {
+      return new Promise(async (resolve) => {
+        // setTimeout(() => {
+        //   window.$message.success('模拟编辑成功')
+        //   resolve(true)
+        // }, 2000)
+        const res = await fetchUpdateDictItem(formModel.value.dictCode, formModel.value.id, formModel.value)
+        console.log(res, 'fetchAddDictItem')
+        window.$message.success('提交成功')
+        emit('success')   // ⭐ 通知父组件
+        resolve(true)
+      })
+    },
+    async view() {
+      return true
+    },
+  }
+  await formRef.value?.validate()
+  startLoading()
+  await handlers[modalType.value]() && closeModal()
+}
+
+const rules: FormRules = {
+  label: {
+    required: true,
+    message: '请输入属性名称',
+    trigger: ['input', 'blur'],
+  },
+  dictCode: {
+    required: true,
+    validator: (_rule, value) => {
+      if (value === undefined || value === null) {
+        return new Error('请选择分类编码')
+      }
+      return true
+    },
+    trigger: 'blur'
+    // message: '请输入分类编码',
+    // trigger: ['input', 'blur'],
+  },
+  value: {
+    required: true,
+    message: '请输入属性值',
+    trigger: ['input', 'blur'],
+  },
+}
+const tagTypeOptions = [{
+  label: 'default',
+  value: 'default'
+},{
+  label: 'tertiary',
+  value: 'tertiary'
+  }, {
+  label: 'primary',
+  value: 'primary'
+  }, {
+  label: 'success',
+  value: 'success'
+  }, {
+  label: 'info',
+  value: 'info'
+  }, {
+  label: 'warning',
+  value: 'warning'
+  }, {
+  label: 'error',
+  value: 'error'
+  }]
+
+</script>
+
+<template>
+  <n-modal v-model:show="modalVisible" :mask-closable="false" preset="card" :title="modalTitle" class="w-700px"
+    :segmented="{
+      content: true,
+      action: true,
+    }">
+    <n-form ref="formRef" :rules="rules" label-placement="left" :model="formModel" :label-width="100"
+      :disabled="modalType === 'view'">
+
+      <n-form-item label="分类编码" path="dictCode">
+        <n-select v-model:value="formModel.dictCode" :options="dictData" value-field="dictCode" label-field="name" />
+      </n-form-item>
+
+      <n-form-item label="属性名称" path="label">
+        <n-input v-model:value="formModel.label" />
+      </n-form-item>
+
+      <n-form-item v-if="!status" label="属性值" path="value">
+        <n-input v-model:value="formModel.value" />
+      </n-form-item>
+
+      <n-form-item label="标签类型" path="tagType">
+        <n-select v-model:value="formModel.tagType" :options="tagTypeOptions" />
+      </n-form-item>
+
+      <n-form-item label="备注" path="remark">
+        <n-input v-model:value="formModel.remark" />
+      </n-form-item>
+
+      <n-form-item label="状态" path="status">
+        <n-switch v-model:value="formModel.status" :checked-value="1" :unchecked-value="0" />
+      </n-form-item>
+
+      <n-form-item label="排序" path="sort">
+        <n-input-number v-model:value="formModel.sort" />
+      </n-form-item>
+    </n-form>
+
+    <template #action>
+      <n-space justify="center">
+        <n-button @click="closeModal">
+          取消
+        </n-button>
+        <n-button type="primary" :loading="submitLoading" @click="submitModal">
+          提交
+        </n-button>
+      </n-space>
+    </template>
+  </n-modal>
+</template>
