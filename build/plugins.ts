@@ -82,7 +82,12 @@ export function createVitePlugins(env: ImportMetaEnv) {
 
     AutoProxy({
       enableProxy: env.VITE_HTTP_PROXY === 'Y',
-      serviceConfig,
+      serviceConfig: env.VITE_API_BASE_URL
+        ? {
+            dev: { ...serviceConfig.dev, url: env.VITE_API_BASE_URL },
+            production: { ...serviceConfig.production, url: env.VITE_API_BASE_URL },
+          }
+        : serviceConfig,
       dts: 'src/typings/auto-proxy.d.ts',
     }),
   ]

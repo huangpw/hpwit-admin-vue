@@ -12,6 +12,8 @@ interface ImportMetaEnv {
   readonly VITE_APP_NAME: string
   /** 项目短标题 */
   readonly VITE_SHORT_APP_NAME: string
+  /** 覆盖当前环境的主 API 地址 */
+  readonly VITE_API_BASE_URL?: string
   /** 开启请求代理 */
   readonly VITE_HTTP_PROXY?: 'Y' | 'N'
   /** 是否开启打包压缩 */

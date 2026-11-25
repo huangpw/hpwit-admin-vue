@@ -73,8 +73,38 @@ export const useRouteStore = defineStore('route-store', {
         // 个人中心属于登录用户的内置页面，即使后端动态菜单未返回，也应可直接访问。
         const userCenterRoute = staticRoutes.find(route => route.name === 'userCenter')
         const resolvedRoutes = rowRoutes.some(route => route.name === 'userCenter') || !userCenterRoute
-          ? rowRoutes
+          ? [...rowRoutes]
           : [...rowRoutes, userCenterRoute]
+        const workRoute = resolvedRoutes.find(route => route.name === 'flowableWork')
+        if (workRoute && !resolvedRoutes.some(route => route.name === 'flowableOrder' || route.path === '/flowable/order')) {
+          const orderRoute: AppRoute.RowRoute = {
+            name: 'flowableOrder',
+            path: '/flowable/order',
+            title: '订单编辑',
+            componentPath: '/flowable/order/index.vue',
+            icon: 'icon-park-outline:list-view',
+            requiresAuth: true,
+            menuType: 'page',
+            hide: true,
+            order: 6,
+            id: -1,
+            pid: workRoute.pid,
+          }
+          resolvedRoutes.push(orderRoute)
+        }
+        const approvalLists = ['flowableWork', 'flowableMine', 'flowableTodo', 'flowableDone', 'flowableCc', 'flowableMonitor']
+        if (resolvedRoutes.some(route => approvalLists.includes(route.name))) {
+          resolvedRoutes.push({
+            name: 'flowableDetail',
+            path: '/flowable/detail/:id',
+            title: '审批详情',
+            componentPath: '/flowable/common/index.vue',
+            requiresAuth: true,
+            hide: true,
+            id: -2,
+            pid: null,
+          })
+        }
         this.rowRoutes = resolvedRoutes
 
         // Generate actual route and insert

@@ -50,6 +50,7 @@
   "dependencies": {
     "@vueuse/core": "^13.6.0",
     "alova": "^3.3.4",
+    "bpmn-js": "18.33.1",
     "colord": "^2.9.3",
     "echarts": "^5.6.0",
     "md-editor-v3": "^5.6.1",

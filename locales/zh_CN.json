@@ -132,6 +132,18 @@
     "captchaRuleTip": "请输入验证码"
   },
   "route": {
+    "flowable": "流程管理",
+    "flowableApproval": "审批管理",
+    "flowableWork": "审批中心",
+    "flowableTodo": "待我审批",
+    "flowableMine": "我发起的",
+    "flowableDone": "我已审批",
+    "flowableCc": "抄送我的",
+    "flowableModels": "流程模型",
+    "flowableMonitor": "流程监控",
+    "flowableBusinessPages": "业务页面",
+    "flowableOrder": "订单编辑",
+    "flowableDetail": "审批详情",
     "appRoot": "首页",
     "dashboard": "仪表盘",
     "workbench": "工作台",

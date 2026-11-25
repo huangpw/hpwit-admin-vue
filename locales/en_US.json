@@ -93,6 +93,18 @@
     "captchaRuleTip": "Please enter captcha"
   },
   "route": {
+    "flowable": "Workflow Management",
+    "flowableApproval": "Approval Management",
+    "flowableWork": "Approval Center",
+    "flowableTodo": "Pending My Approval",
+    "flowableMine": "My Requests",
+    "flowableDone": "Processed by Me",
+    "flowableCc": "Copied to Me",
+    "flowableModels": "Workflow Models",
+    "flowableMonitor": "Workflow Monitor",
+    "flowableBusinessPages": "Business Pages",
+    "flowableOrder": "Edit Order",
+    "flowableDetail": "Approval Details",
     "appRoot": "Home",
     "cardList": "Card list",
     "draggableList": "Draggable list",
