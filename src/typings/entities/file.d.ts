@@ -11,6 +11,11 @@ namespace Entity {
     operationType?: string[] | []
   }
 
+  interface FileInfo {
+    name: string
+    url: string
+  }
+
   interface UploadFile {
     file?: File | null
     fileName?: string | null

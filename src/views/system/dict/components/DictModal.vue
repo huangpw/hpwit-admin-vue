@@ -1,51 +1,11 @@
-<template>
-  <n-modal
-    v-model:show="modalVisible"
-    :mask-closable="false"
-    preset="card"
-    :title="modalTitle"
-    draggable
-    class="w-700px"
-    :segmented="{
-      content: true,
-      action: true,
-    }"
-  >
-    <n-form ref="formRef" :rules="rules" label-placement="left" :model="formModel" :label-width="100">
-      <n-form-item label="字典名称" path="name">
-        <n-input v-model:value="formModel.name" />
-      </n-form-item>
-      <n-form-item label="字典码" path="dictCode">
-        <n-input v-model:value="formModel.dictCode" />
-      </n-form-item>
-      <n-form-item label="备注" path="remark">
-        <n-input v-model:value="formModel.remark" />
-      </n-form-item>
-      <n-form-item label="状态" path="status">
-        <n-switch v-model:value="formModel.status" />
-      </n-form-item>
-    </n-form>
-    <template #action>
-      <n-space justify="center">
-        <n-button @click="closeModal">
-          取消
-        </n-button>
-        <n-button type="primary" :loading="submitLoading" @click="submitModal">
-          提交
-        </n-button>
-      </n-space>
-    </template>
-  </n-modal>
-</template>
-
 <script setup lang="ts">
-import type { FormRules } from 'naive-ui';
+import type { FormRules } from 'naive-ui'
 
-import { useBoolean } from '@/hooks';
+import { useBoolean } from '@/hooks'
 import {
   fetchAddDict,
   fetchUpdateDict,
-} from '@/service';
+} from '@/service'
 
 interface Props {
   modalName?: string
@@ -53,9 +13,8 @@ interface Props {
 
 // 父组件传参
 const {
-  modalName = '字典项'
+  modalName = '字典项',
 } = defineProps<Props>()
-
 
 // 子组件传参
 const emits = defineEmits(['open', 'submit', 'close', 'success'])
@@ -66,24 +25,24 @@ const { bool: modalVisible, setTrue: showModal, setFalse: hiddenModal } = useBoo
 const { bool: submitLoading, setTrue: startLoading, setFalse: endLoading } = useBoolean(false)
 
 // 表单字段源
-const formDefault: Entity.Dict = {
-  id: null,
+const formDefault: Entity.DictForm = {
+  id: undefined,
   dictCode: '',
   name: '',
-  status: true,
-  remark: ''
+  status: 1,
+  remark: '',
 }
-const formModel = ref<Entity.Dict>({...formDefault})
+const formModel = ref<Entity.DictForm>({ ...formDefault })
 // 弹窗类型
 type ModalType = 'add' | 'view' | 'edit'
 const modalType = shallowRef<ModalType>('add')
 const modalTitle = computed(() => {
   const titleMap: Record<ModalType, string> = {
-    add: '添加' + modalName,
-    view: '查看' + modalName,
-    edit: '编辑' + modalName,
+    add: `添加${modalName}`,
+    view: `查看${modalName}`,
+    edit: `编辑${modalName}`,
   }
-  return `${titleMap[modalType.value]}${name}`
+  return titleMap[modalType.value]
 })
 
 // 父组件调用方法
@@ -124,50 +83,26 @@ defineExpose({
 // 提交
 const formRef = ref()
 async function submitModal() {
-  const handlers = {
-    async add() { // 新增
-      return new Promise(async (resolve) => {
-        // setTimeout(() => {
-        //   window.$message.success('模拟新增成功')
-        //   resolve(true)
-        // }, 2000)
-        formModel.value.status = formModel.value.status ? 1 : 0
-        const res = await fetchAddDict(formModel.value);
-        if (res.isSuccess) {
-          window.$message.success('提交成功')
-          emits('success')   // ⭐ 通知父组件
-          resolve(true)
-        } else {
-          window.$message.error(res.message)
-          resolve(false)
-        }
-      })
-    },
-    async edit() { // 编辑
-      return new Promise(async (resolve) => {
-        // setTimeout(() => {
-        //   window.$message.success('模拟编辑成功')
-        //   resolve(true)
-        // }, 2000)
-        formModel.value.status = formModel.value.status ? 1 : 0
-        const res = await fetchUpdateDict(formModel.value);
-        if (res.isSuccess) {
-          window.$message.success('提交成功')
-          emits('success')   // ⭐ 通知父组件
-          resolve(true)
-        } else {
-          window.$message.error(res.message)
-          resolve(false)
-        }
-      })
-    },
-    async view() {
-      return true
-    },
-  }
+  if (modalType.value === 'view')
+    return
   await formRef.value?.validate()
   startLoading()
-  await handlers[modalType.value]() && closeModal()
+  try {
+    const result = modalType.value === 'add'
+      ? await fetchAddDict(formModel.value)
+      : await fetchUpdateDict(formModel.value)
+    if (result.isSuccess) {
+      window.$message.success('提交成功')
+      emits('success')
+      closeModal()
+    }
+    else {
+      window.$message.error(result.message)
+    }
+  }
+  finally {
+    endLoading()
+  }
 }
 
 // 数据校验
@@ -181,6 +116,46 @@ const rules: FormRules = {
     required: true,
     message: '请输入分类编码',
     trigger: ['input', 'blur'],
-  }
+  },
 }
 </script>
+
+<template>
+  <n-modal
+    v-model:show="modalVisible"
+    :mask-closable="false"
+    preset="card"
+    :title="modalTitle"
+    draggable
+    class="w-700px"
+    :segmented="{
+      content: true,
+      action: true,
+    }"
+  >
+    <n-form ref="formRef" :rules="rules" label-placement="left" :model="formModel" :label-width="100">
+      <n-form-item label="字典名称" path="name">
+        <n-input v-model:value="formModel.name" />
+      </n-form-item>
+      <n-form-item label="字典码" path="dictCode">
+        <n-input v-model:value="formModel.dictCode" />
+      </n-form-item>
+      <n-form-item label="备注" path="remark">
+        <n-input v-model:value="formModel.remark" />
+      </n-form-item>
+      <n-form-item label="状态" path="status">
+        <n-switch v-model:value="formModel.status" :checked-value="1" :unchecked-value="0" />
+      </n-form-item>
+    </n-form>
+    <template #action>
+      <n-space justify="center">
+        <n-button @click="closeModal">
+          取消
+        </n-button>
+        <n-button type="primary" :loading="submitLoading" @click="submitModal">
+          提交
+        </n-button>
+      </n-space>
+    </template>
+  </n-modal>
+</template>

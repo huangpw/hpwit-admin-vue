@@ -110,8 +110,8 @@ const rules = {
 
 const options = ref()
 async function getRoleList() {
-  const { data } = await fetchRoleList()
-  options.value = data
+  const { data } = await fetchRoleList({})
+  options.value = data.list
 }
 </script>
 

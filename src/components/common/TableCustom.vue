@@ -1,5 +1,11 @@
 <script setup lang="ts">
+import type { DropdownOption } from 'naive-ui'
 
+withDefaults(defineProps<{ options?: DropdownOption[] }>(), { options: () => [] })
+const emit = defineEmits<{ select: [key: string | number] }>()
+function handleSelect(key: string | number) {
+  emit('select', key)
+}
 </script>
 
 <template>

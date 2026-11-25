@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { NScrollbar } from 'naive-ui'
+import type { ComponentPublicInstance } from 'vue'
 import type { RouteLocationNormalized } from 'vue-router'
 import { useAppStore, useTabStore } from '@/store'
 import { useTabScroll } from '@/hooks/useTabScroll'
@@ -19,6 +21,10 @@ const { tabs } = storeToRefs(useTabStore())
 const appStore = useAppStore()
 
 const { scrollbar, onWheel } = useTabScroll(computed(() => tabStore.currentTabPath))
+
+function setScrollbar(instance: Element | ComponentPublicInstance | null) {
+  scrollbar.value = (instance ?? undefined) as InstanceType<typeof NScrollbar> | undefined
+}
 
 const router = useRouter()
 function handleTab(route: RouteLocationNormalized) {
@@ -114,7 +120,7 @@ useDraggable(el, tabs, {
 </script>
 
 <template>
-  <n-scrollbar ref="scrollbar" class="relative flex h-full tab-bar-scroller-wrapper" content-class="h-full pr-34 tab-bar-scroller-content" :x-scrollable="true" @wheel="onWheel">
+  <n-scrollbar :ref="setScrollbar" class="relative flex h-full tab-bar-scroller-wrapper" content-class="h-full pr-34 tab-bar-scroller-content" :x-scrollable="true" @wheel="onWheel">
     <div class="p-l-2 flex wh-full relative">
       <div class="flex items-end">
         <TabBarItem

@@ -1,40 +1,38 @@
 <script setup lang="tsx">
 import type {
   DataTableColumns,
-  FormInst,
-} from 'naive-ui';
+} from 'naive-ui'
 import {
   NButton,
   NPopconfirm,
   NSpace,
-  NSwitch,
-  NTag,
-} from 'naive-ui';
+} from 'naive-ui'
 
-import { Gender } from '@/constants';
-import { useBoolean } from '@/hooks';
+import { useBoolean } from '@/hooks'
 import {
   fetchConfigPage,
   fetchDelConfigById,
-} from '@/service';
+} from '@/service'
 
-import TableModal from './components/TableModal.vue';
+import TableModal from './components/TableModal.vue'
 
 const { bool: loading, setTrue: startLoading, setFalse: endLoading } = useBoolean(false)
 const { bool: visible, setTrue: openModal } = useBoolean(false)
 
 const initialModel = {
-  keywords: ''
+  keywords: '',
 }
 const model = ref({ ...initialModel })
 
-const formRef = ref<FormInst | null>()
-async function deleteData(id?: number) {
+async function deleteData(id: number | null) {
+  if (id == null)
+    return
   const res = await fetchDelConfigById(id)
   if (res.isSuccess) {
     window.$message.success('删除成功')
     getConfigPage()
-  } else {
+  }
+  else {
     window.$message.error(res.message)
   }
 }
@@ -45,7 +43,7 @@ const columns: DataTableColumns<Entity.Config> = [
     width: 50,
     render: (_, index) => {
       return `${index + 1}`
-    }
+    },
   },
   {
     title: '配置名称',
@@ -76,7 +74,7 @@ const columns: DataTableColumns<Entity.Config> = [
           <NPopconfirm onPositiveClick={() => deleteData(row.id)}>
             {{
               default: () => '确认删除?',
-              trigger: () => <NButton size="small" type="error" >删除</NButton>,
+              trigger: () => <NButton size="small" type="error">删除</NButton>,
             }}
           </NPopconfirm>
         </NSpace>
@@ -90,7 +88,7 @@ const pagination = ref({
   pageSize: 10,
   count: 0,
 })
-const listData = ref<Entity.User[]>([])
+const listData = ref<Entity.Config[]>([])
 
 onMounted(() => {
   getConfigPage()
@@ -100,7 +98,7 @@ async function getConfigPage() {
   await fetchConfigPage({
     pageNum: pagination.value.pageNum,
     pageSize: pagination.value.pageSize,
-    ...model.value
+    ...model.value,
   }).then((res: any) => {
     pagination.value.count = res.data.total
     listData.value = res.data.list
@@ -123,12 +121,12 @@ function setModalType(type: ModalType) {
   modalType.value = type
 }
 
-const editData = ref<Entity.User | null>(null)
-function setEditData(data: Entity.User | null) {
+const editData = ref<Entity.Config | null>(null)
+function setEditData(data: Entity.Config | null) {
   editData.value = data
 }
 
-function handleEditTable(row: Entity.User) {
+function handleEditTable(row: Entity.Config) {
   setEditData(row)
   setModalType('edit')
   openModal()
@@ -142,7 +140,7 @@ function handleAddTable() {
 <template>
   <NSpace vertical size="large">
     <n-card>
-      <n-form ref="formRef" :model="model" label-placement="left" inline :show-feedback="false">
+      <n-form :model="model" label-placement="left" inline :show-feedback="false">
         <n-flex>
           <n-form-item label="关键字" path="keywords">
             <n-input v-model:value="model.keywords" placeholder="请输入配置键\配置名称" />

@@ -1,6 +1,5 @@
 <script setup lang="tsx">
-import type { DataTableColumns, FormInst, NDataTable } from 'naive-ui'
-import { Gender } from '@/constants'
+import type { DataTableColumns, NDataTable } from 'naive-ui'
 import { useBoolean } from '@/hooks'
 import { useTableDrag } from '@/hooks/useTableDrag'
 import { fetchUserPage } from '@/service'
@@ -16,8 +15,7 @@ const initialModel = {
 }
 const model = ref({ ...initialModel })
 
-const formRef = ref<FormInst | null>()
-function sendMail(id?: number) {
+function sendMail(id?: number | null) {
   window.$message.success(`删除用户id:${id}`)
 }
 const columns: DataTableColumns<Entity.User> = [
@@ -37,13 +35,14 @@ const columns: DataTableColumns<Entity.User> = [
     key: 'gender',
     render: (row) => {
       const tagType = {
-        0: 'primary',
+        0: 'default',
         1: 'success',
+        2: 'warning',
       } as const
-      if (row.gender) {
+      if (row.gender != null) {
         return (
           <NTag type={tagType[row.gender]}>
-            {Gender[row.gender]}
+            {{ 0: '保密', 1: '男', 2: '女' }[row.gender]}
           </NTag>
         )
       }
@@ -113,7 +112,7 @@ onMounted(() => {
 })
 async function getUserList() {
   startLoading()
-  await fetchUserPage().then((res: any) => {
+  await fetchUserPage({}).then((res: any) => {
     listData.value = res.data.list
     endLoading()
   })
@@ -129,7 +128,7 @@ function handleResetSearch() {
 <template>
   <NSpace vertical size="large">
     <n-card>
-      <n-form ref="formRef" :model="model" label-placement="left" inline :show-feedback="false">
+      <n-form :model="model" label-placement="left" inline :show-feedback="false">
         <n-flex>
           <n-form-item label="姓名" path="condition_1">
             <n-input v-model:value="model.condition_1" placeholder="请输入" />

@@ -1,7 +1,6 @@
 <script setup lang="tsx">
-import type { DataTableColumns, FormInst } from 'naive-ui'
+import type { DataTableColumns } from 'naive-ui'
 import CopyText from '@/components/custom/CopyText.vue'
-import { Gender } from '@/constants'
 import { useBoolean } from '@/hooks'
 import { fetchUserPage } from '@/service'
 import { NButton, NPopconfirm, NSpace, NSwitch, NTag } from 'naive-ui'
@@ -18,7 +17,6 @@ function handleResetSearch() {
   model.value = { ...initialModel }
 }
 
-const formRef = ref<FormInst | null>()
 const modalRef = ref()
 
 function delteteUser(id: number) {
@@ -37,13 +35,14 @@ const columns: DataTableColumns<Entity.User> = [
     key: 'gender',
     render: (row) => {
       const tagType = {
-        0: 'primary',
+        0: 'default',
         1: 'success',
+        2: 'warning',
       } as const
-      if (row.gender) {
+      if (row.gender != null) {
         return (
           <NTag type={tagType[row.gender]}>
-            {Gender[row.gender]}
+            {{ 0: '保密', 1: '男', 2: '女' }[row.gender]}
           </NTag>
         )
       }
@@ -117,7 +116,7 @@ function handleUpdateDisabled(value: 0 | 1, id: number) {
 
 async function getUserList() {
   startLoading()
-  await fetchUserPage().then((res: any) => {
+  await fetchUserPage({}).then((res: any) => {
     listData.value = res.data.list
     count.value = res.data.count
     endLoading()
@@ -172,7 +171,7 @@ const treeData = ref([
 
     <NSpace vertical class="flex-1">
       <n-card>
-        <n-form ref="formRef" :model="model" label-placement="left" inline :show-feedback="false">
+        <n-form :model="model" label-placement="left" inline :show-feedback="false">
           <n-flex>
             <n-form-item label="姓名" path="condition_1">
               <n-input v-model:value="model.condition_1" placeholder="请输入" />

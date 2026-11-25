@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import lib from '@/../package.json'
+import { dependencies, devDependencies, version } from '@/../package.json'
 </script>
 
 <template>
@@ -48,7 +48,7 @@ import lib from '@/../package.json'
         </n-descriptions-item>
         <n-descriptions-item label="版本">
           <n-tag :bordered="false">
-            {{ lib.version }}
+            {{ version }}
           </n-tag>
         </n-descriptions-item>
       </n-descriptions>
@@ -60,7 +60,7 @@ import lib from '@/../package.json'
         :column="4"
       >
         <n-descriptions-item
-          v-for="(item, key, index) in lib.dependencies"
+          v-for="(item, key, index) in dependencies"
           :key="index"
           :label="key"
         >
@@ -75,7 +75,7 @@ import lib from '@/../package.json'
         :column="4"
       >
         <n-descriptions-item
-          v-for="(item, key, index) in lib.devDependencies"
+          v-for="(item, key, index) in devDependencies"
           :key="index"
           :label="key"
         >

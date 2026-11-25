@@ -73,6 +73,9 @@ const columns: DataTableColumns<AppRoute.RowRoute> = [
       const menuTagType: Record<AppRoute.MenuType, NaiveUI.ThemeColor> = {
         dir: 'primary',
         page: 'warning',
+        button: 'info',
+        link: 'success',
+        unknown: 'default',
       }
       return <NTag type={menuTagType[menuType]}>{menuType}</NTag>
     },

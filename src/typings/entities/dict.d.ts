@@ -19,6 +19,15 @@ namespace Entity {
     isActive?: boolean
   }
 
+  /** 系统字典编辑表单，与 /v1/dict 的请求字段一致。 */
+  interface DictForm {
+    id?: number
+    dictCode: string
+    name: string
+    status: 0 | 1
+    remark?: string
+  }
+
   // 字典项 (system/dict 详情子表)
   interface DictItem {
     id?: number

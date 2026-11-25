@@ -25,12 +25,5 @@ export default defineConfig(({ mode }) => {
     optimizeDeps: {
       include: ['echarts', 'md-editor-v3', 'quill'],
     },
-    css: {
-      preprocessorOptions: {
-        scss: {
-          api: 'modern',
-        },
-      },
-    },
   }
 })

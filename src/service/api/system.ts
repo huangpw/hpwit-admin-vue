@@ -140,12 +140,12 @@ export function fetchDictList(keywordValue?: string) {
   return request.Get<Service.ResponseResult<Entity.Dict[]>>('v1/dict/list', { params })
 }
 // 新增字典(新增分类) /v1/dict
-export function fetchAddDict(data: Entity.Dict) {
-  return request.Post('/v1/dict', data)
+export function fetchAddDict(data: Entity.DictForm) {
+  return request.Post<Service.ResponseResult<null>>('/v1/dict', data)
 }
 // 修改字典(新增分类) /v1/dict/{{id}}
-export function fetchUpdateDict(data: Entity.Dict) {
-  return request.Put(`/v1/dict/${data.id}`, data)
+export function fetchUpdateDict(data: Entity.DictForm) {
+  return request.Put<Service.ResponseResult<null>>(`/v1/dict/${data.id}`, data)
 }
 // 请求获取字典数据列表
 export function fetchDictItemList(dictCode?: string, keywordValue?: string) {
@@ -193,7 +193,7 @@ export function fetchUpdateDictItemStatus(id?: number, status?: boolean) {
 
 // 新增字典数据(分类属性) /v1/dict/{{dictCode}}/item
 export function fetchAddDictItem(dictCode: string, data: Entity.DictItem) {
-  return request.Post(`/v1/dict/${dictCode}/item`, data)
+  return request.Post<Service.ResponseResult<null>>(`/v1/dict/${dictCode}/item`, data)
 }
 // 获取字典数据(分类属性)信息 /v1/dict/{{dictCode}}/item/{{itemId}}/form
 export function fetchDictItemForm(dictCode: string, itemId: number) {
@@ -201,7 +201,7 @@ export function fetchDictItemForm(dictCode: string, itemId: number) {
 }
 // 修改字典数据(分类属性) /v1/dict/{{dictCode}}/item/{{itemId}}
 export function fetchUpdateDictItem(dictCode: string, itemId: number, data: Entity.DictItem) {
-  return request.Put(`/v1/dict/${dictCode}/item/${itemId}`, data)
+  return request.Put<Service.ResponseResult<null>>(`/v1/dict/${dictCode}/item/${itemId}`, data)
 }
 /** 删除字典数据 /v1/dict/item/{{ids}} */
 export function fetchDelDictItemByIds(ids: string) {
@@ -224,15 +224,15 @@ export function fetchConfigPage(data: any) {
 }
 /** 新增 配置管理 /v1/config */
 export function fetchAddConfig(data: Entity.Config) {
-  return request.Post('/v1/config', data)
+  return request.Post<Service.ResponseResult<null>>('/v1/config', data)
 }
 /** 修改 配置管理 /v1/config/{{id}} */
 export function fetchUpdateConfig(data: Entity.Config) {
-  return request.Put(`/v1/config/${data.id}`, data)
+  return request.Put<Service.ResponseResult<null>>(`/v1/config/${data.id}`, data)
 }
 /** 删除 配置管理 /v1/config/{{id}} */
-export function fetchDelConfigById(id: string) {
-  return request.Delete(`/v1/config/${id}`)
+export function fetchDelConfigById(id: number) {
+  return request.Delete<Service.ResponseResult<null>>(`/v1/config/${id}`)
 }
 
 // ***** 配置管理 End *****

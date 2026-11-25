@@ -1,32 +1,26 @@
 <script setup lang="tsx">
 import type {
   DataTableColumns,
-  FormInst,
-} from 'naive-ui';
+} from 'naive-ui'
 import {
   NButton,
-  NPopconfirm,
   NSpace,
-  NSwitch,
-  NTag,
-} from 'naive-ui';
+} from 'naive-ui'
 
-import { Gender } from '@/constants';
-import { useBoolean } from '@/hooks';
-import { fetchLogPage } from '@/service';
+import { useBoolean } from '@/hooks'
+import { fetchLogPage } from '@/service'
 
-import TableModal from './components/TableModal.vue';
+import TableModal from './components/TableModal.vue'
 
 const { bool: loading, setTrue: startLoading, setFalse: endLoading } = useBoolean(false)
-const { bool: visible, setTrue: openModal } = useBoolean(false)
+const { bool: visible } = useBoolean(false)
 
 const initialModel = {
   keywords: '',
-  createTime: null
+  createTime: null,
 }
 const model = ref({ ...initialModel })
 
-const formRef = ref<FormInst | null>()
 // 列表项
 const columns: DataTableColumns<Entity.Log> = [
   {
@@ -81,13 +75,7 @@ const pagination = ref({
   pageSize: 10,
   count: 0,
 })
-const listData = ref<Entity.User[]>([])
-function handleUpdateDisabled(value: 0 | 1, id: number) {
-  const index = listData.value.findIndex(item => item.id === id)
-  if (index > -1)
-    listData.value[index].status = value
-}
-
+const listData = ref<Entity.Log[]>([])
 onMounted(() => {
   getLogPage()
 })
@@ -96,9 +84,8 @@ async function getLogPage() {
   await fetchLogPage({
     pageNum: pagination.value.pageNum,
     pageSize: pagination.value.pageSize,
-    ...model.value
+    ...model.value,
   }).then((res: any) => {
-    console.log(res)
     listData.value = res.data.list
     // total
     endLoading()
@@ -116,32 +103,14 @@ function handleResetSearch() {
 
 type ModalType = 'add' | 'edit'
 const modalType = ref<ModalType>('add')
-function setModalType(type: ModalType) {
-  modalType.value = type
-}
-
 const editData = ref<Entity.User | null>(null)
-function setEditData(data: Entity.User | null) {
-  editData.value = data
-}
-
-function handleEditTable(row: Entity.User) {
-  setEditData(row)
-  setModalType('edit')
-  openModal()
-}
-function handleAddTable() {
-  openModal()
-  setModalType('add')
-}
 </script>
 
 <template>
   <NSpace vertical size="large">
     <n-card>
-      <n-form ref="formRef" :model="model" label-placement="left" inline :show-feedback="false">
+      <n-form :model="model" label-placement="left" inline :show-feedback="false">
         <n-flex>
-
           <n-form-item label="关键字" path="keywords">
             <n-input v-model:value="model.keywords" placeholder="日志内容" />
           </n-form-item>
