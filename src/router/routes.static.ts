@@ -173,6 +173,16 @@ export const staticRoutes: AppRoute.RowRoute[] = [
     pid: 4,
   },
   {
+    name: 'aiChat',
+    path: '/demo/ai-chat',
+    title: 'AI 聊天助手',
+    requiresAuth: true,
+    icon: 'icon-park-outline:robot-one',
+    componentPath: '/demo/ai-chat/index.vue',
+    id: 404,
+    pid: 4,
+  },
+  {
     name: 'editor',
     path: '/demo/editor',
     title: '编辑器',

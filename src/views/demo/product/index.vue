@@ -1,14 +1,26 @@
 <script setup lang="ts">
 import type { ProductRecognitionDraft } from '@/service/api/product'
-import { recognizeProductImage } from '@/service/api/product'
+import { recognizeProductImage, recognizeProductImages } from '@/service/api/product'
+
+type ImageMode = 'single' | 'multiple'
+interface ProductImage {
+  file: File
+  url: string
+}
 
 const MAX_IMAGE_SIZE = 8 * 1024 * 1024
+const MAX_TOTAL_SIZE = 24 * 1024 * 1024
+const MAX_IMAGES = 5
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
 const fileInput = ref<HTMLInputElement>()
-const imageUrl = ref('')
-const selectedFile = shallowRef<File>()
+const mode = ref<ImageMode>('single')
+const images = shallowRef<ProductImage[]>([])
+const activeIndex = ref(0)
+const activeImage = computed(() => images.value[activeIndex.value])
+const requiredImages = computed(() => mode.value === 'multiple' ? 2 : 1)
 const recognizing = ref(false)
+const canRecognize = computed(() => images.value.length >= requiredImages.value && !recognizing.value)
 const recognized = ref(false)
 const errorMessage = ref('')
 let requestSequence = 0
@@ -41,44 +53,67 @@ function fillDraft<K extends keyof ProductRecognitionDraft>(key: K, source: Prod
 
 const fields = Object.keys(emptyDraft) as (keyof ProductRecognitionDraft)[]
 
-function setImage(file?: File) {
-  if (!file)
+function addImages(files: File[]) {
+  if (!files.length)
     return
-  if (file.type ? !ACCEPTED_IMAGE_TYPES.includes(file.type) : !/\.(?:jpe?g|png|webp)$/i.test(file.name)) {
+  const existing = mode.value === 'multiple' ? images.value : []
+  const limit = mode.value === 'multiple' ? MAX_IMAGES : 1
+  if (existing.length + files.length > limit) {
+    errorMessage.value = mode.value === 'multiple' ? '多图模式最多添加 5 张图片' : '单图模式每次只能选择 1 张图片'
+    return
+  }
+  if (files.some(file => file.type ? !ACCEPTED_IMAGE_TYPES.includes(file.type) : !/\.(?:jpe?g|png|webp)$/i.test(file.name))) {
     errorMessage.value = '请选择 JPEG、PNG 或 WebP 图片'
     return
   }
-  if (file.size === 0 || file.size > MAX_IMAGE_SIZE) {
+  if (files.some(file => file.size === 0 || file.size > MAX_IMAGE_SIZE)) {
     errorMessage.value = '请选择有效且不超过 8 MB 的商品图片'
     return
   }
+  const existingSize = existing.reduce((total, image) => total + image.file.size, 0)
+  if (files.reduce((total, file) => total + file.size, existingSize) > MAX_TOTAL_SIZE) {
+    errorMessage.value = '图片总大小不能超过 24 MB'
+    return
+  }
 
-  clearImage()
-  selectedFile.value = file
-  imageUrl.value = URL.createObjectURL(file)
+  updateImages([...existing, ...files.map(file => ({ file, url: URL.createObjectURL(file) }))], existing.length)
 }
 
 function handleFileChange(event: Event) {
   const input = event.target as HTMLInputElement
-  setImage(input.files?.[0])
+  addImages(Array.from(input.files ?? []))
   input.value = ''
 }
 
 function handleDrop(event: DragEvent) {
-  event.preventDefault()
-  setImage(event.dataTransfer?.files[0])
+  addImages(Array.from(event.dataTransfer?.files ?? []))
+}
+
+function changeMode(value: ImageMode) {
+  if (mode.value === value)
+    return
+  mode.value = value
+  // 切回单图时保留当前预览的图片。
+  const next = value === 'single' && activeImage.value ? [activeImage.value] : images.value
+  updateImages(next, value === 'single' ? 0 : activeIndex.value)
+}
+
+function removeImage(index: number) {
+  const next = images.value.filter((_, current) => current !== index)
+  const nextIndex = index < activeIndex.value ? activeIndex.value - 1 : activeIndex.value
+  updateImages(next, Math.min(nextIndex, Math.max(0, next.length - 1)))
 }
 
 async function recognize() {
-  if (!selectedFile.value || recognizing.value)
+  if (!canRecognize.value)
     return
 
-  const file = selectedFile.value
+  const files = images.value.map(image => image.file)
   const sequence = ++requestSequence
   errorMessage.value = ''
   recognizing.value = true
   try {
-    const result = await recognizeProductImage(file)
+    const result = mode.value === 'single' ? await recognizeProductImage(files[0]) : await recognizeProductImages(files)
     if (sequence !== requestSequence)
       return
     if (!result.isSuccess || !result.data) {
@@ -98,12 +133,14 @@ async function recognize() {
   }
 }
 
-function clearImage() {
+function updateImages(next: ProductImage[], nextIndex: number) {
   requestSequence++
-  if (imageUrl.value)
-    URL.revokeObjectURL(imageUrl.value)
-  imageUrl.value = ''
-  selectedFile.value = undefined
+  for (const image of images.value) {
+    if (!next.includes(image))
+      URL.revokeObjectURL(image.url)
+  }
+  images.value = next
+  activeIndex.value = nextIndex
   recognized.value = false
   recognizing.value = false
   errorMessage.value = ''
@@ -112,7 +149,7 @@ function clearImage() {
 }
 
 function resetDraft() {
-  clearImage()
+  updateImages([], 0)
   editedFields.clear()
   Object.assign(draft, structuredClone(emptyDraft))
   Object.assign(manual, { officialPrice: null, usedPriceEstimate: '', warrantyStatus: '' })
@@ -120,8 +157,8 @@ function resetDraft() {
 
 onBeforeUnmount(() => {
   requestSequence++
-  if (imageUrl.value)
-    URL.revokeObjectURL(imageUrl.value)
+  for (const image of images.value)
+    URL.revokeObjectURL(image.url)
 })
 </script>
 
@@ -130,7 +167,7 @@ onBeforeUnmount(() => {
     <header class="page-heading">
       <div>
         <h1>AI 识图录入</h1>
-        <p>上传一张主体清晰的商品图片，识别后可直接核对和编辑。</p>
+        <p>上传商品图片，识别后可核对和编辑商品草稿。</p>
       </div>
       <div v-if="recognized" class="ready-status">
         <icon-park-outline-check-one />
@@ -140,19 +177,30 @@ onBeforeUnmount(() => {
 
     <div class="workspace">
       <section class="image-section" aria-label="商品图片">
+        <div class="image-mode">
+          <n-radio-group :value="mode" size="small" aria-label="图片识别模式" @update:value="changeMode">
+            <n-radio-button value="single">
+              单图模式
+            </n-radio-button>
+            <n-radio-button value="multiple">
+              多图模式
+            </n-radio-button>
+          </n-radio-group>
+          <span>{{ mode === 'multiple' ? '同一商品的 2 至 5 张图片' : '上传 1 张商品图片' }}</span>
+        </div>
         <div
           class="image-stage"
-          :class="{ 'has-image': imageUrl }"
+          :class="{ 'has-image': activeImage }"
           @dragover.prevent
-          @drop="handleDrop"
+          @drop.prevent="handleDrop"
         >
-          <img v-if="imageUrl" :src="imageUrl" :alt="selectedFile?.name" class="product-image">
+          <img v-if="activeImage" :src="activeImage.url" :alt="activeImage.file.name" class="product-image">
           <div v-else class="upload-prompt">
             <div class="upload-icon">
               <icon-park-outline-upload-picture />
             </div>
             <strong>将商品图片拖到这里</strong>
-            <span>支持 JPEG、PNG、WebP，最大 8 MB</span>
+            <span>支持 JPEG、PNG、WebP，单张最大 8 MB</span>
             <n-button type="primary" @click="fileInput?.click()">
               <template #icon>
                 <icon-park-outline-folder-open />
@@ -160,9 +208,9 @@ onBeforeUnmount(() => {
               选择图片
             </n-button>
           </div>
-          <div v-if="imageUrl" class="image-toolbar">
-            <span class="file-name" :title="selectedFile?.name">{{ selectedFile?.name }}</span>
-            <n-button quaternary circle size="small" color="#ffffff" title="移除图片" aria-label="移除图片" @click="clearImage">
+          <div v-if="activeImage" class="image-toolbar">
+            <span class="file-name" :title="activeImage.file.name">{{ activeImage.file.name }}</span>
+            <n-button quaternary circle size="small" color="#ffffff" title="移除当前图片" aria-label="移除当前图片" @click="removeImage(activeIndex)">
               <template #icon>
                 <icon-park-outline-close />
               </template>
@@ -177,21 +225,37 @@ onBeforeUnmount(() => {
           ref="fileInput"
           class="visually-hidden"
           type="file"
+          :multiple="mode === 'multiple'"
           accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
           tabindex="-1"
           aria-label="选择商品图片"
           @change="handleFileChange"
         >
+        <div v-if="mode === 'multiple' && images.length" class="thumbnails" aria-label="已选商品图片">
+          <button
+            v-for="(image, index) in images"
+            :key="image.url"
+            type="button"
+            class="thumbnail"
+            :aria-label="`预览第 ${index + 1} 张图片`"
+            :aria-pressed="activeIndex === index"
+            @click="activeIndex = index"
+          >
+            <img :src="image.url" alt="">
+          </button>
+        </div>
         <div class="image-footer">
           <div class="image-caption">
             <icon-park-outline-picture />
-            <span>{{ imageUrl ? '原始商品图片' : '等待上传图片' }}</span>
+            <span v-if="mode === 'multiple'">已选 {{ images.length }}/{{ MAX_IMAGES }} 张 · 总计最多 24 MB</span>
+            <span v-else>{{ activeImage ? '原始商品图片' : '等待上传图片' }}</span>
           </div>
-          <n-button v-if="imageUrl" secondary @click="fileInput?.click()">
+          <n-button v-if="activeImage" secondary :disabled="mode === 'multiple' && images.length >= MAX_IMAGES" @click="fileInput?.click()">
             <template #icon>
-              <icon-park-outline-refresh />
+              <icon-park-outline-refresh v-if="mode === 'single'" />
+              <icon-park-outline-upload-picture v-else />
             </template>
-            更换图片
+            {{ mode === 'multiple' ? '追加图片' : '更换图片' }}
           </n-button>
         </div>
       </section>
@@ -205,7 +269,7 @@ onBeforeUnmount(() => {
           <n-button
             type="primary"
             :loading="recognizing"
-            :disabled="!selectedFile || recognizing"
+            :disabled="!canRecognize"
             @click="recognize"
           >
             <template #icon>
@@ -337,6 +401,45 @@ onBeforeUnmount(() => {
   min-height: 610px;
 }
 
+.image-mode,
+.thumbnails {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 16px;
+}
+
+.image-mode {
+  justify-content: space-between;
+  color: var(--text-color-2);
+  font-size: 12px;
+}
+
+.thumbnails {
+  border-bottom: 1px solid var(--divider-color);
+}
+
+.thumbnail {
+  width: 52px;
+  height: 52px;
+  padding: 2px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: var(--action-color);
+  cursor: pointer;
+}
+
+.thumbnail[aria-pressed='true'] {
+  border: 2px solid var(--primary-color);
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 .image-stage {
   position: relative;
   display: grid;
@@ -430,6 +533,7 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   min-height: 58px;
   padding: 0 16px;
 }

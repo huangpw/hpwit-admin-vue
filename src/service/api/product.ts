@@ -20,3 +20,15 @@ export function recognizeProductImage(file: File) {
     { timeout: 70_000, shareRequest: false },
   )
 }
+
+export function recognizeProductImages(files: readonly File[]) {
+  const formData = new FormData()
+  for (const file of files)
+    formData.append('files', file)
+
+  return request.Post<Service.ResponseResult<ProductRecognitionDraft>>(
+    '/v1/agnet/product/recognize-multiple',
+    formData,
+    { timeout: 90_000, shareRequest: false },
+  )
+}
